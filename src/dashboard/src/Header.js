@@ -12,13 +12,13 @@ const Header = () => (
       </div>
 
       <div>
-        <a href="https://datahub.io/core/covid-19" target="_blank" className="block mt-4 ml-6 lg:inline-block lg:mt-0 text-sm text-gray-700 hover:text-black">
+        <a href="https://datahub.io/core/covid-19" target="_blank" className="block mt-4 lg:ml-6 lg:inline-block lg:mt-0 text-sm text-gray-700 hover:text-black">
           RAW DATA
         </a>
-        <a href="https://www.datopian.com/about/" target="_blank" className="block mt-4 ml-6 lg:inline-block lg:mt-0 text-sm text-gray-700 hover:text-black">
+        <a href="https://www.datopian.com/about/" target="_blank" className="block mt-4 lg:ml-6 lg:inline-block lg:mt-0 text-sm text-gray-700 hover:text-black">
           TEAM
         </a>
-        <a href="https://www.datopian.com/contact/" target="_blank" className="block mt-4 ml-6 lg:inline-block lg:mt-0 text-sm text-gray-700 hover:text-black">
+        <a href="https://www.datopian.com/contact/" target="_blank" className="block mt-4 lg:ml-6 lg:inline-block lg:mt-0 text-sm text-gray-700 hover:text-black">
           CONTACT
         </a>
       </div>

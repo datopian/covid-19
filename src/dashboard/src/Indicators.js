@@ -2,7 +2,7 @@ import React from 'react';
 
 
 const Indicators = ({totalCases, totalDeaths, deathRate, newCases, newCaseRate}) => (
-  <div className="grid grid-cols-5 gap-8 mt-4 mb-4 font-bold text-3xl">
+  <div className="grid sm:grid-cols-1 lg:grid-cols-5 gap-8 mt-4 mb-4 font-bold text-3xl">
     <div className="border text-center py-16">
       {totalCases}
       <div className="text-xs text-gray-600 font-light">Cases Worldwide</div>
