@@ -1,0 +1,7 @@
+node_modules/
+
+# yarn
+yarn-error.log
+
+# sass
+.sass-cache
