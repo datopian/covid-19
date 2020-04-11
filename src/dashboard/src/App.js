@@ -106,7 +106,7 @@ class App extends Component {
     return (
       <div className="h-screen">
         <Header />
-        <div className="px-16 h-full">
+        <div className="px-6 md:px-16 h-full">
           <Indicators
             totalCases={totalCases}
             totalDeaths={totalDeaths}
@@ -114,7 +114,7 @@ class App extends Component {
             newCases={newCases}
             newCaseRate={newCaseRate}
           />
-          <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8 mt-4 mb-4 h-screen-0.5">
+        <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8 mt-4 mb-4 h-screen-0.8 md:h-screen-0.5">
             <LineChart data={keyCountriesData} />
             <Choropleth data={latestCountryData} features={features} />
           </div>
