@@ -114,8 +114,10 @@ class App extends Component {
             newCases={newCases}
             newCaseRate={newCaseRate}
           />
-          <LineChart data={keyCountriesData} />
-          <Choropleth data={latestCountryData} features={features} />
+          <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8 mt-4 mb-4 h-screen-0.5">
+            <LineChart data={keyCountriesData} />
+            <Choropleth data={latestCountryData} features={features} />
+          </div>
         </div>
       </div>
     );

@@ -6,17 +6,20 @@ import { ResponsiveLine } from '@nivo/line';
 const LineChart = ({ data }) => (
     <ResponsiveLine
         data={data}
-        margin={{ top: 50, right: 110, bottom: 100, left: 60 }}
-        xScale={{ type: 'point' }}
+        margin={{ top: 20, right: 20, bottom: 40, left: 60 }}
+        xScale={{
+            type: 'time',
+            format: '%Y-%m-%d',
+            precision: 'day',
+        }}
+        xFormat="time:%Y-%m-%d"
         yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
         curve="cardinal"
         axisBottom={{
-            orient: 'bottom',
-            tickSize: 5,
-            tickPadding: 10,
-            tickRotation: -90,
+            format: '%b %d',
+            tickValues: 'every 11 days',
             legend: 'Date',
-            legendOffset: 85,
+            legendOffset: 35,
             legendPosition: 'middle'
         }}
         axisLeft={{
@@ -35,20 +38,21 @@ const LineChart = ({ data }) => (
         pointBorderColor={{ from: 'serieColor' }}
         pointLabel="y"
         pointLabelYOffset={-12}
+        pointSize="2"
         useMesh={true}
         legends={[
             {
-                anchor: 'top-right',
+                anchor: 'top-left',
                 direction: 'column',
                 justify: false,
-                translateX: 100,
+                translateX: 10,
                 translateY: 0,
                 itemsSpacing: 0,
                 itemDirection: 'left-to-right',
                 itemWidth: 80,
                 itemHeight: 20,
                 itemOpacity: 0.75,
-                symbolSize: 12,
+                symbolSize: 6,
                 symbolShape: 'circle',
                 symbolBorderColor: 'rgba(0, 0, 0, .5)',
                 effects: [
