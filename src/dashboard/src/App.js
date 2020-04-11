@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import { parse } from 'papaparse';
 import Header from './Header';
 import Indicators from './Indicators';
-import MyResponsiveChoropleth from './Choropleth';
+import LineChart from './LineChart';
+import Choropleth from './Choropleth';
 import './App.css';
 
 
@@ -49,19 +50,39 @@ class App extends Component {
   render() {
     const { worldwideData, countryData, referenceData, features, isLoading } = this.state;
     let latestCountryData = [];
+    let keyCountriesData = [];
     if (countryData.length > 0) {
       // Assumption is that data is sorted by date and country which is true at the moment
       // The last row is empty so using penultimate row
       const latestAvailableDate = countryData[countryData.length - 2].Date;
       countryData.forEach(row => {
         if (row.Date === latestAvailableDate) {
-          latestCountryData.push(row)
+          latestCountryData.push(row);
         }
       })
+      latestCountryData.sort((a, b) => {
+        return parseInt(b.Confirmed) - parseInt(a.Confirmed);
+      })
+      latestCountryData.slice(0, 5)
+        .map(row => row.Country)
+        .forEach(country => {
+          keyCountriesData.push(
+            {
+              id: country,
+              data: []
+            }
+          )
+        });
+      countryData.forEach(row => {
+        const keyCountry = keyCountriesData.find(item => item.id === row.Country);
+        if (keyCountry) {
+          keyCountry.data.push({x: row.Date, y: parseInt(row.Confirmed)});
+        }
+      });
     }
     if (latestCountryData.length > 0 && referenceData.length > 0) {
       latestCountryData.forEach(row => {
-        row['id'] = (referenceData.find(item => item.Country_Region === row.Country)).iso3
+        row['id'] = (referenceData.find(item => item.Country_Region === row.Country)).iso3;
       })
     }
     let totalCases, totalDeaths, deathRate, newCases, newCaseRate;
@@ -93,7 +114,8 @@ class App extends Component {
             newCases={newCases}
             newCaseRate={newCaseRate}
           />
-          <MyResponsiveChoropleth data={latestCountryData} features={features} />
+          <LineChart data={keyCountriesData} />
+          <Choropleth data={latestCountryData} features={features} />
         </div>
       </div>
     );
