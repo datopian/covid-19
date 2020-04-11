@@ -101,7 +101,11 @@ class App extends Component {
     }
 
     if (isLoading) {
-      return <p>Loading ...</p>;
+      return (
+        <div className="flex h-screen">
+          <p className="m-auto">Loading ...</p>
+        </div>
+      );
     }
     return (
       <div className="h-screen">
