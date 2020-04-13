@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Select from 'react-select';
 import { parse } from 'papaparse';
+import numeral from 'numeral';
 import Header from './Header';
 import Indicators from './Indicators';
 import Chart from './Chart';
@@ -204,10 +205,10 @@ class App extends Component {
             onChange={this.onSelectChanged.bind(this)}
           />
           <Indicators
-            totalCases={totalCases}
-            totalDeaths={totalDeaths}
+            totalCases={numeral(totalCases).format('0,0')}
+            totalDeaths={numeral(totalDeaths).format('0,0')}
             deathRate={deathRate}
-            newCases={newCases}
+            newCases={numeral(newCases).format('0,0')}
             newCaseRate={newCasesRate}
           />
           <div className="mt-4 mb-4 w-full">

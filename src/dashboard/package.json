@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "numeral": "^2.0.6",
     "papaparse": "^5.2.0",
     "plotly.js": "^1.53.0",
     "react": "^16.13.1",
