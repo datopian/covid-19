@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { parse } from 'papaparse';
 import Header from './Header';
 import Indicators from './Indicators';
-import LineChart from './LineChart';
-import Choropleth from './Choropleth';
+import Chart from './Chart';
 import './App.css';
 
 
@@ -11,6 +10,8 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      country: 'world',
+      countriesToCompare: [],
       worldwideData: [],
       countryData: [],
       referenceData: [],
@@ -21,25 +22,28 @@ class App extends Component {
 
 
   async componentDidMount() {
-    this.setState({ isLoading: true });
+    const urlObject = new URL(window.location.href);
+    const country = urlObject.searchParams.get('country') || 'world';
+
+    this.setState({ isLoading: true, country });
 
     const worldwideDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/worldwide-aggregated.csv'
     const countryDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
-    const referendeDataUrl = 'https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/UID_ISO_FIPS_LookUp_Table.csv'
-    const featuresUrl = 'https://raw.githubusercontent.com/plouc/nivo/master/website/src/data/components/geo/world_countries.json'
 
     const newState = {isLoading: false}
 
-    await Promise.all([worldwideDataUrl, countryDataUrl, referendeDataUrl, featuresUrl].map(async url => {
+    await Promise.all([worldwideDataUrl, countryDataUrl].map(async url => {
       let response = await fetch(url)
       if (url === worldwideDataUrl) {
-        newState.worldwideData = (parse(await response.text(), {header: true})).data
+        newState.worldwideData = (parse(await response.text(), {header: true})).data;
+        if (!newState.worldwideData[newState.worldwideData.length - 1].Date) {
+          newState.worldwideData.pop();
+        }
       } else if (url === countryDataUrl) {
-        newState.countryData = (parse(await response.text(), {header: true})).data
-      } else if (url === referendeDataUrl) {
-        newState.referenceData = (parse(await response.text(), {header: true})).data
-      } else if (url === featuresUrl) {
-        newState.features = (await response.json()).features
+        newState.countryData = (parse(await response.text(), {header: true})).data;
+        if (!newState.countryData[newState.countryData.length - 1].Date) {
+          newState.countryData.pop();
+        }
       }
     }))
 
@@ -47,58 +51,97 @@ class App extends Component {
   }
 
 
+  getCountiresDataForDate(date) {
+    const { countryData } = this.state;
+    if (countryData.length > 0) {
+      const response = [];
+
+      if (date === 'latest') {
+        date = countryData[countryData.length - 1].Date;
+      } else if (date === 'previous') {
+        const latest = countryData[countryData.length - 1].Date;
+        const latestDateObj = new Date(latest);
+        const prevDateObj = new Date(latestDateObj.setDate(latestDateObj.getDate()-1));
+        date = prevDateObj.toISOString().slice(0,10);
+      }
+
+      countryData.forEach(row => {
+        if (row.Date === date) {
+          response.push(row);
+        }
+      })
+      return response;
+    }
+  }
+
+
+  getTotalCasesAndDeaths() {
+    const { worldwideData, country } = this.state;
+    let totalCases, totalDeaths;
+    if (country === 'world' && worldwideData.length > 0) {
+      totalCases = worldwideData[worldwideData.length - 1].Confirmed;
+      totalDeaths = worldwideData[worldwideData.length - 1].Deaths;
+    } else {
+      const countriesData = this.getCountiresDataForDate('latest');
+      if (countriesData) {
+        const selectedCountryData = countriesData.find(item => item.Country.toLowerCase() === country);
+        totalCases = selectedCountryData.Confirmed;
+        totalDeaths = selectedCountryData.Deaths;
+      }
+    }
+
+    return { totalCases, totalDeaths };
+  }
+
+
+  getNewCasesAndRate() {
+    const { worldwideData, countryData, country } = this.state;
+    let newCases, newCasesRate;
+    if (country === 'world' && worldwideData.length > 0) {
+      newCases = worldwideData[worldwideData.length - 1].Confirmed - worldwideData[worldwideData.length - 2].Confirmed;
+      newCasesRate = (newCases / worldwideData[worldwideData.length - 2].Confirmed * 100).toFixed(2);
+    } else if (countryData.length > 0) {
+      const latestCountryData = this.getCountiresDataForDate('latest')
+        .find(item => item.Country.toLowerCase() === country);
+      const prevCountryData = this.getCountiresDataForDate('previous')
+        .find(item => item.Country.toLowerCase() === country);
+      newCases = latestCountryData.Confirmed - prevCountryData.Confirmed;
+      newCasesRate = (newCases / prevCountryData.Confirmed * 100).toFixed(2);
+    }
+    return { newCases, newCasesRate };
+  }
+
+
+  getChartData() {
+    const { country, countriesToCompare, worldwideData, countryData } = this.state;
+    const chartData = [];
+    const trace = {x: [], y: []};
+    if (country === 'world') {
+      worldwideData.forEach(row => {
+        trace.x.push(row.Date);
+        trace.y.push(row.Confirmed);
+      })
+    } else {
+      countryData.forEach(row => {
+        if (row.Country.toLowerCase() === country) {
+          trace.x.push(row.Date);
+          trace.y.push(row.Confirmed);
+        }
+      })
+    }
+    chartData.push(trace);
+    return chartData;
+  }
+
+
   render() {
     const { worldwideData, countryData, referenceData, features, isLoading } = this.state;
-    let latestCountryData = [];
-    let keyCountriesData = [];
-    if (countryData.length > 0) {
-      // Assumption is that data is sorted by date and country which is true at the moment
-      // The last row is empty so using penultimate row
-      const latestAvailableDate = countryData[countryData.length - 2].Date;
-      countryData.forEach(row => {
-        if (row.Date === latestAvailableDate) {
-          latestCountryData.push(row);
-        }
-      })
-      latestCountryData.sort((a, b) => {
-        return parseInt(b.Confirmed) - parseInt(a.Confirmed);
-      })
-      latestCountryData.slice(0, 5)
-        .map(row => row.Country)
-        .forEach(country => {
-          keyCountriesData.push(
-            {
-              id: country,
-              data: []
-            }
-          )
-        });
-      countryData.forEach(row => {
-        const keyCountry = keyCountriesData.find(item => item.id === row.Country);
-        if (keyCountry) {
-          keyCountry.data.push({x: row.Date, y: parseInt(row.Confirmed)});
-        }
-      });
-    }
-    if (latestCountryData.length > 0 && referenceData.length > 0) {
-      latestCountryData.forEach(row => {
-        row['id'] = (referenceData.find(item => item.Country_Region === row.Country)).iso3;
-      })
-    }
-    let totalCases, totalDeaths, deathRate, newCases, newCaseRate;
-    if (worldwideData.length > 0) {
-      const latestData = worldwideData[worldwideData.length - 2];
-      const previousData = worldwideData[worldwideData.length - 3];
-      totalCases = latestData.Confirmed;
-      totalDeaths = latestData.Deaths;
-      deathRate = (totalDeaths / totalCases * 100).toFixed(2);
-      newCases = totalCases - previousData.Confirmed;
-      newCaseRate = parseFloat(latestData['Increase rate']).toFixed(2);
-      // Format numbers
-      totalCases = totalCases.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      totalDeaths = totalDeaths.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-      newCases = newCases.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }
+
+    const { totalCases, totalDeaths } = this.getTotalCasesAndDeaths();
+    const deathRate = (totalDeaths / totalCases * 100).toFixed(2);
+    const { newCases, newCasesRate } = this.getNewCasesAndRate();
+
+    const chartData = this.getChartData();
 
     if (isLoading) {
       return (
@@ -108,19 +151,18 @@ class App extends Component {
       );
     }
     return (
-      <div className="h-screen">
+      <div>
         <Header />
-        <div className="px-6 md:px-16 h-full">
+        <div className="px-6 md:px-16">
           <Indicators
             totalCases={totalCases}
             totalDeaths={totalDeaths}
             deathRate={deathRate}
             newCases={newCases}
-            newCaseRate={newCaseRate}
+            newCaseRate={newCasesRate}
           />
-        <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-8 mt-4 mb-4 h-screen-0.8 md:h-screen-0.5">
-            <LineChart data={keyCountriesData} />
-            <Choropleth data={latestCountryData} features={features} />
+          <div className="mt-4 mb-4 w-full">
+            <Chart data={chartData} />
           </div>
         </div>
       </div>

@@ -3,14 +3,14 @@
   "description": "Dashboard for COVID-19.",
   "version": "0.1.0",
   "dependencies": {
-    "@nivo/geo": "^0.61.1",
-    "@nivo/line": "^0.61.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "papaparse": "^5.2.0",
+    "plotly.js": "^1.53.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-plotly.js": "^2.4.0",
     "react-scripts": "3.4.1"
   },
   "scripts": {
