@@ -13,6 +13,7 @@ export default function (props) {
   })
   return (
     <Plot
+      className="w-full"
       data={data}
       layout={ {title: 'Cumilative confirmed cases'} }
       config={ {responsive: true, displayModeBar: false} }
