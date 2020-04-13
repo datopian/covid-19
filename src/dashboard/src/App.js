@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
 import { parse } from 'papaparse';
 import Header from './Header';
 import Indicators from './Indicators';
@@ -84,7 +85,8 @@ class App extends Component {
     } else {
       const countriesData = this.getCountriesDataForDate('latest');
       if (countriesData) {
-        const selectedCountryData = countriesData.find(item => item.Country.toLowerCase() === country);
+        const selectedCountryData = countriesData
+          .find(item => item.Country.toLowerCase() === country.toLowerCase());
         totalCases = selectedCountryData.Confirmed;
         totalDeaths = selectedCountryData.Deaths;
       }
@@ -102,9 +104,9 @@ class App extends Component {
       newCasesRate = (newCases / worldwideData[worldwideData.length - 2].Confirmed * 100).toFixed(2);
     } else if (countryData.length > 0) {
       const latestCountryData = this.getCountriesDataForDate('latest')
-        .find(item => item.Country.toLowerCase() === country);
+        .find(item => item.Country.toLowerCase() === country.toLowerCase());
       const prevCountryData = this.getCountriesDataForDate('previous')
-        .find(item => item.Country.toLowerCase() === country);
+        .find(item => item.Country.toLowerCase() === country.toLowerCase());
       newCases = latestCountryData.Confirmed - prevCountryData.Confirmed;
       newCasesRate = (newCases / prevCountryData.Confirmed * 100).toFixed(2);
     }
@@ -123,7 +125,7 @@ class App extends Component {
       })
     } else {
       countryData.forEach(row => {
-        if (row.Country.toLowerCase() === country) {
+        if (row.Country.toLowerCase() === country.toLowerCase()) {
           trace.x.push(row.Date);
           trace.y.push(row.Confirmed);
         }
@@ -131,6 +133,21 @@ class App extends Component {
     }
     chartData.push(trace);
     return chartData;
+  }
+
+
+  getCountryOptions() {
+    const options = [];
+    const latestData = this.getCountriesDataForDate('latest');
+    if (latestData) {
+      latestData.forEach(item => options.push({value: item.Country, label: item.Country}));
+    }
+    return options;
+  }
+
+
+  onSelectChanged(data) {
+    this.setState({country: data.value});
   }
 
 
@@ -143,6 +160,8 @@ class App extends Component {
 
     const chartData = this.getChartData();
 
+    const options = this.getCountryOptions();
+
     if (isLoading) {
       return (
         <div className="flex h-screen">
@@ -154,6 +173,13 @@ class App extends Component {
       <div>
         <Header />
         <div className="px-6 md:px-16">
+          <Select
+            className="mt-6 w-full md:w-1/3"
+            options={options}
+            defaultValue={{value: 'world', label: 'World'}}
+            isLoading={isLoading}
+            onChange={this.onSelectChanged.bind(this)}
+          />
           <Indicators
             totalCases={totalCases}
             totalDeaths={totalDeaths}

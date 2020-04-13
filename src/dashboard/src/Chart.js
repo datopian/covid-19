@@ -15,7 +15,7 @@ export default function (props) {
     <Plot
       data={data}
       layout={ {title: 'Cumilative confirmed cases'} }
-      config={ {responsive: true} }
+      config={ {responsive: true, displayModeBar: false} }
     />
   );
 }
