@@ -15,8 +15,6 @@ class App extends Component {
       countriesToCompare: [],
       worldwideData: [],
       countryData: [],
-      referenceData: [],
-      features: [],
       isLoading: false
     };
   }
@@ -115,7 +113,7 @@ class App extends Component {
 
 
   getChartData() {
-    const { country, countriesToCompare, worldwideData, countryData } = this.state;
+    const { country, worldwideData, countryData } = this.state;
     const chartData = [];
     const trace = {x: [], y: []};
     if (country === 'world') {
@@ -136,6 +134,23 @@ class App extends Component {
   }
 
 
+  getChartDataForComparison() {
+    const { countriesToCompare, countryData } = this.state;
+    const traces = [];
+    countriesToCompare.forEach(country => {
+      const trace = {x: [], y: []};
+      countryData.forEach(row => {
+        if (row.Country.toLowerCase() === country.toLowerCase()) {
+          trace.x.push(row.Date);
+          trace.y.push(row.Confirmed);
+        }
+      })
+      traces.push(trace);
+    })
+    return traces;
+  }
+
+
   getCountryOptions() {
     const options = [];
     const latestData = this.getCountriesDataForDate('latest');
@@ -151,8 +166,16 @@ class App extends Component {
   }
 
 
+  onCompareSelectChanged(data) {
+    const { countriesToCompare } = this.state;
+    const newList = JSON.parse(JSON.stringify(countriesToCompare));
+    newList.push(data.value);
+    this.setState({countriesToCompare: newList})
+  }
+
+
   render() {
-    const { worldwideData, countryData, referenceData, features, isLoading } = this.state;
+    const { isLoading } = this.state;
 
     const { totalCases, totalDeaths } = this.getTotalCasesAndDeaths();
     const deathRate = (totalDeaths / totalCases * 100).toFixed(2);
