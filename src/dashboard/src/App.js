@@ -51,7 +51,7 @@ class App extends Component {
   }
 
 
-  getCountiresDataForDate(date) {
+  getCountriesDataForDate(date) {
     const { countryData } = this.state;
     if (countryData.length > 0) {
       const response = [];
@@ -82,7 +82,7 @@ class App extends Component {
       totalCases = worldwideData[worldwideData.length - 1].Confirmed;
       totalDeaths = worldwideData[worldwideData.length - 1].Deaths;
     } else {
-      const countriesData = this.getCountiresDataForDate('latest');
+      const countriesData = this.getCountriesDataForDate('latest');
       if (countriesData) {
         const selectedCountryData = countriesData.find(item => item.Country.toLowerCase() === country);
         totalCases = selectedCountryData.Confirmed;
@@ -101,9 +101,9 @@ class App extends Component {
       newCases = worldwideData[worldwideData.length - 1].Confirmed - worldwideData[worldwideData.length - 2].Confirmed;
       newCasesRate = (newCases / worldwideData[worldwideData.length - 2].Confirmed * 100).toFixed(2);
     } else if (countryData.length > 0) {
-      const latestCountryData = this.getCountiresDataForDate('latest')
+      const latestCountryData = this.getCountriesDataForDate('latest')
         .find(item => item.Country.toLowerCase() === country);
-      const prevCountryData = this.getCountiresDataForDate('previous')
+      const prevCountryData = this.getCountriesDataForDate('previous')
         .find(item => item.Country.toLowerCase() === country);
       newCases = latestCountryData.Confirmed - prevCountryData.Confirmed;
       newCasesRate = (newCases / prevCountryData.Confirmed * 100).toFixed(2);
