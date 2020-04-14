@@ -16,6 +16,7 @@ class App extends Component {
       countriesToCompare: [],
       worldwideData: [],
       countryData: [],
+      referenceData: [],
       isLoading: false
     };
   }
@@ -27,12 +28,13 @@ class App extends Component {
 
     this.setState({ isLoading: true, country });
 
-    const worldwideDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/worldwide-aggregated.csv'
-    const countryDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv'
+    const worldwideDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/worldwide-aggregated.csv';
+    const countryDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv';
+    const referenceDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/reference.csv';
 
     const newState = {isLoading: false}
 
-    await Promise.all([worldwideDataUrl, countryDataUrl].map(async url => {
+    await Promise.all([worldwideDataUrl, countryDataUrl, referenceDataUrl].map(async url => {
       let response = await fetch(url)
       if (url === worldwideDataUrl) {
         newState.worldwideData = (parse(await response.text(), {header: true})).data;
@@ -43,6 +45,11 @@ class App extends Component {
         newState.countryData = (parse(await response.text(), {header: true})).data;
         if (!newState.countryData[newState.countryData.length - 1].Date) {
           newState.countryData.pop();
+        }
+      } else if (url === referenceDataUrl) {
+        newState.referenceData = (parse(await response.text(), {header: true})).data;
+        if (!newState.referenceData[newState.referenceData.length - 1].Date) {
+          newState.referenceData.pop();
         }
       }
     }))
@@ -110,6 +117,28 @@ class App extends Component {
       newCasesRate = (newCases / prevCountryData.Confirmed * 100).toFixed(2);
     }
     return { newCases, newCasesRate };
+  }
+
+
+  getCasesPer100k() {
+    const { worldwideData, referenceData, country } = this.state;
+    let casesPer100k;
+    const countriesData = this.getCountriesDataForDate('latest');
+    if (country.toLowerCase() === 'world') {
+      if (worldwideData.length > 0) {
+        const worldPopulation = 7594270356;
+        casesPer100k = (worldwideData[worldwideData.length - 1].Confirmed / worldPopulation * 100000).toFixed(2);
+      }
+    } else if (countriesData && referenceData.length > 0) {
+      const selectedCountryData = countriesData
+        .find(item => item.Country.toLowerCase() === country.toLowerCase());
+      const countryPopulation = referenceData
+        .find(item => item['Country_Region'].toLowerCase() === country.toLowerCase())
+        .Population;
+      casesPer100k = (selectedCountryData.Confirmed / countryPopulation * 100000).toFixed(2);
+    }
+
+    return casesPer100k;
   }
 
 
@@ -195,6 +224,7 @@ class App extends Component {
     const { totalCases, totalDeaths } = this.getTotalCasesAndDeaths();
     const deathRate = (totalDeaths / totalCases * 100).toFixed(2);
     const { newCases, newCasesRate } = this.getNewCasesAndRate();
+    const casesPer100k = this.getCasesPer100k();
 
     const chartData = this.getChartData();
 
@@ -224,6 +254,7 @@ class App extends Component {
             deathRate={deathRate}
             newCases={numeral(newCases).format('0,0')}
             newCaseRate={newCasesRate}
+            casesPer100k={casesPer100k}
           />
           <div className="mt-4 mb-4 w-full">
             <Chart data={chartData} />
