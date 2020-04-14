@@ -13,7 +13,6 @@ class App extends Component {
     super(props);
     this.state = {
       country: 'world',
-      countriesToCompare: [],
       worldwideData: [],
       countryData: [],
       referenceData: [],
@@ -176,19 +175,20 @@ class App extends Component {
 
 
   getChartDataForComparison() {
-    const { countriesToCompare, countryData } = this.state;
-    const traces = [];
-    countriesToCompare.forEach(country => {
-      const trace = {x: [], y: []};
-      countryData.forEach(row => {
-        if (row.Country.toLowerCase() === country.toLowerCase()) {
-          trace.x.push(row.Date);
-          trace.y.push(row.Confirmed);
-        }
+    const { referenceData } = this.state;
+    const trace = {x: [], y: [], type: 'bar', orientation: 'h'};
+    const countriesData = this.getCountriesDataForDate('latest');
+    if (countriesData && referenceData.length > 0) {
+      countriesData.forEach(row => {
+        trace.y.push(row.Country);
+        const countryPopulation = referenceData
+          .find(item => item['Country_Region'].toLowerCase() === row.Country.toLowerCase())
+          .Population;
+        const casesPer100k = (row.Confirmed / countryPopulation * 100000).toFixed(2);
+        trace.x.push(casesPer100k);
       })
-      traces.push(trace);
-    })
-    return traces;
+    }
+    return [trace];
   }
 
 
