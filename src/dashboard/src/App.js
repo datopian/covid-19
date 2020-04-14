@@ -153,7 +153,7 @@ class App extends Component {
 
 
   getCountryOptions() {
-    const options = [];
+    const options = [{value: 'world', label: 'World'}];
     const latestData = this.getCountriesDataForDate('latest');
     if (latestData) {
       latestData.forEach(item => options.push({value: item.Country, label: item.Country}));
