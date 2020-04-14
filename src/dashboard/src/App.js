@@ -179,7 +179,7 @@ class App extends Component {
 
 
   render() {
-    const { isLoading } = this.state;
+    const { country, isLoading } = this.state;
 
     const { totalCases, totalDeaths } = this.getTotalCasesAndDeaths();
     const deathRate = (totalDeaths / totalCases * 100).toFixed(2);
@@ -201,9 +201,9 @@ class App extends Component {
         <Header />
         <div className="px-6 md:px-16">
           <Select
-            className="mt-6 w-full md:w-1/3"
+            className="mt-6 w-full md:w-1/3 capitalize"
             options={options}
-            defaultValue={{value: 'world', label: 'World'}}
+            defaultValue={{value: country, label: country}}
             isLoading={isLoading}
             onChange={this.onSelectChanged.bind(this)}
           />
