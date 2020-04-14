@@ -28,7 +28,7 @@ export default function (props) {
     <Plot
       className="w-full"
       data={data}
-      layout={ {title: 'Cumilative confirmed cases'} }
+      layout={ {yaxis: {type: 'log'}} }
       config={ {responsive: true, displayModeBar: false} }
     />
   );
