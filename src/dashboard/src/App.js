@@ -115,23 +115,34 @@ class App extends Component {
 
   getChartData() {
     const { country, worldwideData, countryData } = this.state;
-    const chartData = [];
-    const trace = {x: [], y: []};
+    const trace1 = {x: [], y: [], type: 'scatter'};
+    const trace2 = {x: [], y: [], type: 'bar'};
+    const trace3 = {x: [], y: [], type: 'bar'};
+    let previousRow = {Confirmed: 0, Deaths: 0};
     if (country === 'world') {
       worldwideData.forEach(row => {
-        trace.x.push(row.Date);
-        trace.y.push(row.Confirmed);
+        trace1.x.push(row.Date);
+        trace1.y.push(parseInt(row.Confirmed));
+        trace2.x.push(row.Date);
+        trace2.y.push(row.Confirmed - previousRow.Confirmed);
+        trace3.x.push(row.Date);
+        trace3.y.push(row.Deaths - previousRow.Deaths)
+        previousRow = JSON.parse(JSON.stringify(row));
       })
     } else {
       countryData.forEach(row => {
         if (row.Country.toLowerCase() === country.toLowerCase()) {
-          trace.x.push(row.Date);
-          trace.y.push(row.Confirmed);
+          trace1.x.push(row.Date);
+          trace1.y.push(parseInt(row.Confirmed));
+          trace2.x.push(row.Date);
+          trace2.y.push(row.Confirmed - previousRow.Confirmed);
+          trace3.x.push(row.Date);
+          trace3.y.push(row.Deaths - previousRow.Deaths)
+          previousRow = JSON.parse(JSON.stringify(row));
         }
       })
     }
-    chartData.push(trace);
-    return chartData;
+    return [trace1, trace2, trace3];
   }
 
 
