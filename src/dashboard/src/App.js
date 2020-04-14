@@ -163,6 +163,9 @@ class App extends Component {
 
 
   onSelectChanged(data) {
+    const urlObject = new URL(window.location.href);
+    urlObject.searchParams.set('country', data.value);
+    window.history.pushState({path:urlObject.href}, '', urlObject.href);
     this.setState({country: data.value});
   }
 
