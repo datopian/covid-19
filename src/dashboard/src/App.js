@@ -144,9 +144,9 @@ class App extends Component {
 
   getChartData() {
     const { country, worldwideData, countryData } = this.state;
-    const trace1 = {x: [], y: [], type: 'scatter'};
-    const trace2 = {x: [], y: [], type: 'bar'};
-    const trace3 = {x: [], y: [], type: 'bar'};
+    const trace1 = {x: [], y: [], type: 'scatter', name: 'Cumilative confirmed cases', mode: 'lines+markers'};
+    const trace2 = {x: [], y: [], type: 'bar', name: 'New cases per day'};
+    const trace3 = {x: [], y: [], type: 'bar', name: 'Deaths per day'};
     let previousRow = {Confirmed: 0, Deaths: 0};
     if (country === 'world') {
       worldwideData.forEach(row => {
