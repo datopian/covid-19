@@ -5,7 +5,7 @@ import Plot from 'react-plotly.js';
 export default function (props) {
   return (
     <Plot
-      className="w-full h-screen"
+      className="w-full h-screen md:h-map"
       data={props.data}
       layout={ {
         title: 'Cumulative confirmed cases',
@@ -15,7 +15,7 @@ export default function (props) {
           showland: true,
           landcolor: 'rgb(217, 217, 217)',
           projection:{
-            type: 'mercator'
+            type: 'robinson'
           }
       }} }
       config={ {responsive: true, displayModeBar: false} }

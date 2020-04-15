@@ -4048,6 +4048,10 @@ video {
   height: 450px;
 }
 
+.h-map {
+  height: 900px;
+}
+
 .leading-3 {
   line-height: .75rem;
 }
@@ -14513,6 +14517,10 @@ video {
 
   .sm\:h-graph {
     height: 450px;
+  }
+
+  .sm\:h-map {
+    height: 900px;
   }
 
   .sm\:leading-3 {
@@ -24983,6 +24991,10 @@ video {
     height: 450px;
   }
 
+  .md\:h-map {
+    height: 900px;
+  }
+
   .md\:leading-3 {
     line-height: .75rem;
   }
@@ -35451,6 +35463,10 @@ video {
     height: 450px;
   }
 
+  .lg\:h-map {
+    height: 900px;
+  }
+
   .lg\:leading-3 {
     line-height: .75rem;
   }
@@ -45917,6 +45933,10 @@ video {
 
   .xl\:h-graph {
     height: 450px;
+  }
+
+  .xl\:h-map {
+    height: 900px;
   }
 
   .xl\:leading-3 {
