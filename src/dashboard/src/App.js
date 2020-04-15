@@ -6,6 +6,7 @@ import Header from './Header';
 import Indicators from './Indicators';
 import Chart from './Chart';
 import Choropleth from './Choropleth';
+import Table from './Table';
 import './App.css';
 
 
@@ -235,6 +236,38 @@ class App extends Component {
   }
 
 
+  getTableData() {
+    const { referenceData } = this.state;
+    let tableData = [];
+    let tableColumns = [];
+
+    const countriesData = this.getCountriesDataForDate('latest');
+    const previousData = this.getCountriesDataForDate('previous');
+    if (countriesData && referenceData.length > 0) {
+      tableData = countriesData;
+      tableData.map((row, index) => {
+        row['Death rate'] = (row['Deaths'] / row['Confirmed'] * 100).toFixed(2) + '%';
+        row['New cases'] = row['Confirmed'] - previousData[index]['Confirmed'];
+        row['New cases rate'] = (row['New cases'] / previousData[index]['Confirmed'] * 100).toFixed(2) + '%';
+        const countryPopulation = referenceData
+          .find(item => item['Country_Region'].toLowerCase() === row['Country'].toLowerCase())
+          .Population;
+        row['Cases per 100k'] = (row['Confirmed'] / countryPopulation * 100000).toFixed(2);
+        return row;
+      });
+
+      Object.keys(tableData[0]).forEach(item => {
+        tableColumns.push({
+          Header: item,
+          accessor: item
+        });
+      });
+    }
+
+    return { tableData, tableColumns };
+  }
+
+
   getCountryOptions() {
     const options = [{value: 'world', label: 'World'}];
     const latestData = this.getCountriesDataForDate('latest');
@@ -273,6 +306,8 @@ class App extends Component {
 
     const mapData = this.getMapData();
 
+    const { tableData, tableColumns } = this.getTableData();
+
     const options = this.getCountryOptions();
 
     if (isLoading) {
@@ -306,6 +341,9 @@ class App extends Component {
           </div>
           <div className="mt-4 mb-4 w-full">
             <Choropleth data={mapData} />
+          </div>
+          <div className="mt-4 mb-4 w-full border-2">
+            <Table data={tableData} columns={tableColumns} />
           </div>
         </div>
       </div>
