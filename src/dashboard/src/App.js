@@ -5,6 +5,7 @@ import numeral from 'numeral';
 import Header from './Header';
 import Indicators from './Indicators';
 import Chart from './Chart';
+import Choropleth from './Choropleth';
 import './App.css';
 
 
@@ -192,6 +193,48 @@ class App extends Component {
   }
 
 
+  getMapData() {
+    const { referenceData } = this.state;
+    const countriesData = this.getCountriesDataForDate('latest');
+
+    const data = [{
+      type: 'choropleth',
+      locations: [], // ISO3 codes
+      z: [], // Values
+      text: [], // Country names
+      autocolorscale: false,
+      zmin: 100,
+      zmax: 1000000,
+      colorscale: [
+        [0, 'rgb(255,246,229)'], [0.2, 'rgb(255,165,1)'],
+        [0.4, 'rgb(229,148,0)'], [0.6, 'rgb(178,115,0)'],
+        [0.8, 'rgb(127,82,0)'], [1, 'rgb(51,33,0)']
+      ],
+      colorbar: {
+        thickness: 5
+      },
+      marker: {
+        line:{
+          color: 'rgb(255,255,255)',
+          width: 1
+        }
+      }
+    }];
+
+    if (countriesData && referenceData.length > 0) {
+      countriesData.forEach(row => {
+        data[0].z.push(row.Confirmed);
+        data[0].text.push(row.Country);
+        const referenceItem = referenceData
+          .find(item => item['Country_Region'].toLowerCase() === row.Country.toLowerCase());
+        data[0].locations.push(referenceItem.iso3);
+      })
+    }
+
+    return data;
+  }
+
+
   getCountryOptions() {
     const options = [{value: 'world', label: 'World'}];
     const latestData = this.getCountriesDataForDate('latest');
@@ -228,6 +271,8 @@ class App extends Component {
 
     const chartData = this.getChartData();
 
+    const mapData = this.getMapData();
+
     const options = this.getCountryOptions();
 
     if (isLoading) {
@@ -258,6 +303,9 @@ class App extends Component {
           />
           <div className="mt-4 mb-4 w-full">
             <Chart data={chartData} />
+          </div>
+          <div className="mt-4 mb-4 w-full">
+            <Choropleth data={mapData} />
           </div>
         </div>
       </div>
