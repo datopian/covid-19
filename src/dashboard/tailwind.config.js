@@ -10,6 +10,7 @@ module.exports = {
         "screen-0.33": "calc(100vh / 3)",
         "screen-0.25": "calc(100vh / 4)",
         "screen-0.2": "calc(100vh / 5)",
+        "graph": "450px"
       }),
     },
   },

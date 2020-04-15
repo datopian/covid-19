@@ -4044,6 +4044,10 @@ video {
   height: calc(100vh / 5);
 }
 
+.h-graph {
+  height: 450px;
+}
+
 .leading-3 {
   line-height: .75rem;
 }
@@ -14505,6 +14509,10 @@ video {
 
   .sm\:h-screen-0\.2 {
     height: calc(100vh / 5);
+  }
+
+  .sm\:h-graph {
+    height: 450px;
   }
 
   .sm\:leading-3 {
@@ -24971,6 +24979,10 @@ video {
     height: calc(100vh / 5);
   }
 
+  .md\:h-graph {
+    height: 450px;
+  }
+
   .md\:leading-3 {
     line-height: .75rem;
   }
@@ -35435,6 +35447,10 @@ video {
     height: calc(100vh / 5);
   }
 
+  .lg\:h-graph {
+    height: 450px;
+  }
+
   .lg\:leading-3 {
     line-height: .75rem;
   }
@@ -45897,6 +45913,10 @@ video {
 
   .xl\:h-screen-0\.2 {
     height: calc(100vh / 5);
+  }
+
+  .xl\:h-graph {
+    height: 450px;
   }
 
   .xl\:leading-3 {
