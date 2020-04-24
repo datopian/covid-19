@@ -29,28 +29,31 @@ class App extends Component {
 
     this.setState({ isLoading: true, country });
 
-    const worldwideDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/worldwide-aggregated.csv';
-    const countryDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/countries-aggregated.csv';
-    const referenceDataUrl = 'https://raw.githubusercontent.com/datasets/covid-19/master/data/reference.csv';
+    const base = 'https://raw.githubusercontent.com/datasets/covid-19/master/';
+    const datapackageUrl = base + 'datapackage.json';
 
     const newState = {isLoading: false}
 
-    await Promise.all([worldwideDataUrl, countryDataUrl, referenceDataUrl].map(async url => {
-      let response = await fetch(url)
-      if (url === worldwideDataUrl) {
-        newState.worldwideData = (parse(await response.text(), {header: true})).data;
-        if (!newState.worldwideData[newState.worldwideData.length - 1].Date) {
-          newState.worldwideData.pop();
-        }
-      } else if (url === countryDataUrl) {
+    const datapackage = await (await fetch(datapackageUrl)).json()
+
+    await Promise.all(datapackage.resources.map(async resource => {
+      if (resource.name === 'countries-aggregated') {
+        const response = await fetch(base + resource.path)
         newState.countryData = (parse(await response.text(), {header: true})).data;
         if (!newState.countryData[newState.countryData.length - 1].Date) {
-          newState.countryData.pop();
+          newState.countryData.pop()
         }
-      } else if (url === referenceDataUrl) {
+      } else if (resource.name === 'worldwide-aggregated') {
+        const response = await fetch(base + resource.path)
+        newState.worldwideData = (parse(await response.text(), {header: true})).data;
+        if (!newState.worldwideData[newState.worldwideData.length - 1].Date) {
+          newState.worldwideData.pop()
+        }
+      } else if (resource.name === 'reference') {
+        const response = await fetch(base + resource.path)
         newState.referenceData = (parse(await response.text(), {header: true})).data;
         if (!newState.referenceData[newState.referenceData.length - 1].Date) {
-          newState.referenceData.pop();
+          newState.referenceData.pop()
         }
       }
     }))
