@@ -131,7 +131,7 @@ class App extends Component {
     if (country.toLowerCase() === 'world') {
       if (worldwideData.length > 0) {
         const worldPopulation = 7594270356;
-        casesPer100k = (worldwideData[worldwideData.length - 1].Confirmed / worldPopulation * 100000).toFixed(2);
+        casesPer100k = (worldwideData[worldwideData.length - 1].Confirmed / worldPopulation * 100000).toFixed(0);
       }
     } else if (countriesData && referenceData.length > 0) {
       const selectedCountryData = countriesData
@@ -139,7 +139,7 @@ class App extends Component {
       const countryPopulation = referenceData
         .find(item => item['Country_Region'].toLowerCase() === country.toLowerCase())
         .Population;
-      casesPer100k = (selectedCountryData.Confirmed / countryPopulation * 100000).toFixed(2);
+      casesPer100k = (selectedCountryData.Confirmed / countryPopulation * 100000).toFixed(0);
     }
 
     return casesPer100k;
@@ -255,7 +255,7 @@ class App extends Component {
         const countryPopulation = referenceData
           .find(item => item['Country_Region'].toLowerCase() === row['Country'].toLowerCase())
           .Population;
-        row['Cases per 100k'] = (row['Confirmed'] / countryPopulation * 100000).toFixed(2);
+        row['Cases per 100k'] = (row['Confirmed'] / countryPopulation * 100000).toFixed(0);
         return row;
       });
 
